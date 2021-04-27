@@ -1,0 +1,56 @@
+version: "3.6"
+
+x-omnia: &default
+  image: hotprotocol/omnia
+  logging:
+    driver: json-file
+    options:
+      max-file: "5"
+      max-size: 10m
+  volumes:
+    - ./config:/home/omnia/config
+  environment: &env
+    ETH_GAS: 7000000
+    SSB_INVITE: ${SSB_INVITE}
+    SSB_FILE_SET: /src/ssb-config.json
+    SSB_STR_connections_incoming_net__external: ${EXT_IP}
+    SSB_SET_connections_incoming_net__port: ${SSB_NET_PORT}
+    SSB_STR_connections_incoming_ws__external: ${EXT_IP}
+    SSB_SET_connections_incoming_ws__port: ${SSB_WS_PORT}
+    OMNIA_STR_ethereum_from: ${ETH_FROM}
+    OMNIA_STR_ethereum_keystore: /home/omnia/keys
+    OMNIA_STR_ethereum_password: /home/omnia/password
+    OMNIA_STR_ethereum_network: ${ETH_NET-mainnet}
+    OMNIA_STR_ethereum_infuraKey: ${INFURAKEY}
+    FILE_PATH_ETH_PASSWORD: /home/omnia/password
+    FILE_CONT_ETH_PASSWORD: ${ETH_PASSWORD}
+    FILE_PATH_ETH_KEY: /home/omnia/keys/key.json
+    FILE_CONT_ETH_KEY: ${ETH_KEY}
+
+services:
+  ssb:
+    image: ssb-server
+    build: .
+    volumes:
+      - ./.ssb/config:/root/.ssb/config
+      - ./.ssb/secret:/root/.ssb/secret
+      - ./.ssb/manifest.json:/root/.ssb/manifest.json
+    expose:
+      - 8008
+      - 8988
+    ports:
+      - 8008:8008
+      - 8988:8988
+    command: start
+
+  feed:
+    <<: *default
+    environment:
+      <<: *env
+      OMNIA_FILE_SET: /home/omnia/config/feed.conf
+
+  relayer:
+    <<: *default
+    environment:
+      <<: *env
+      OMNIA_FILE_SET: /home/omnia/config/relayer.conf

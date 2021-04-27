@@ -1,0 +1,31 @@
+{
+  "connections": {
+    "incoming": {
+      "net": [
+        {
+          "port": 8008,
+          "scope": [
+            "public",
+            "local"
+          ],
+          "external": "host.docker.internal",
+          "transform": "shs"
+        }
+      ],
+      "ws": [
+        {
+          "port": 8988,
+          "scope": [
+            "public",
+            "local"
+          ],
+          "external": "host.docker.internal",
+          "transform": "shs"
+        }
+      ]
+    }
+  },
+  "friends": {
+    "hops": 6
+  }
+}
